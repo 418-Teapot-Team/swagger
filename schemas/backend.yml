@@ -70,7 +70,7 @@ paths:
           name: input
           required: true
           schema:
-            $ref: '#definitions/app.signInInput'
+            $ref: '#/definitions/app.signInInput'
       produces:
         - application/json
       responses:
