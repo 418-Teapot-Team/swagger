@@ -40,6 +40,17 @@ definitions:
       token:
         type: string
         example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODQyMzY1NzUsImlhdCI6MTY4NDA2Mzc3NSwidXNlcl9pZCI6MX0.M35OqYQp8naY8DckGulHSsjuA4mvCM62qoB6nUDzFmY'
+  Currency:
+    type: object
+    properties:
+      txt:
+        type: string
+      code:
+        type: string
+      officialRate:
+        type: string
+      darkRate:
+        type: string
 host: localhost:8081
 info:
   contact: { }
@@ -139,3 +150,41 @@ paths:
       summary: SignUp
       tags:
         - auth
+  /courses/getAll:
+    get:
+      consumes:
+        - application/json
+      description: get data from goverla and nbu
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Currency"
+            example:
+              - txt: Долар США
+                code: USD
+                officialRate: "36.5686"
+                darkRate: "37.77"
+              - txt: Євро
+                code: EUR
+                officialRate: "39.8287"
+                darkRate: "41.35"
+              - txt: Злотий
+                code: PLN
+                officialRate: "8.785"
+                darkRate: "9.0"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+          examples:
+            application/json:
+              message: something gone wrong while trying create user
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
