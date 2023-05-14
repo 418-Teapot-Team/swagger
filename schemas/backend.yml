@@ -21,7 +21,7 @@ definitions:
     type: object
   User:
     properties:
-      name:
+      fullName:
         type: string
         example: 'Boryslav Ziubrytskyi'
       email:
@@ -31,9 +31,26 @@ definitions:
         type: string
         example: "qwerty123321"
     required:
-      - name
+      - fullName
       - email
       - password
+    type: object
+
+  WhoAmI:
+    properties:
+      fullName:
+        type: string
+        example: 'Boryslav Ziubrytskyi'
+      email:
+        type: string
+        example: 'boryslav.ziubrytskyi@gmail.com'
+      userId:
+        type: string
+        example: "7"
+    required:
+      - email
+      - fullName
+      - userId
     type: object
   Token:
     properties:
@@ -188,3 +205,46 @@ paths:
           description: ""
           schema:
             $ref: '#/definitions/handler.errorResponse'
+
+      summary: Get actual courses
+      tags:
+        - courses
+  /api/who-am-i:
+    get:
+      consumes:
+        - application/json
+      description: get data about user
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/WhoAmI'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+          examples:
+            application/json:
+              message: user not found
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+          examples:
+            application/json:
+              message: error while trying to get user
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+
+
+
+
+      security:
+        - ApiKeyAuth: [ ]
+      summary: get data about user
+      tags:
+        - api
