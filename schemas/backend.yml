@@ -52,6 +52,25 @@ definitions:
       - fullName
       - userId
     type: object
+  ListInput:
+    type: object
+    properties:
+      type:
+        type: string
+        enum:
+          - income
+          - outcome
+        example: income
+      category:
+        type: string
+        example: salary
+      amount:
+        type: number
+        format: float
+        example: 2000.0
+      comment:
+        type: string
+        example: received bonus
   Token:
     properties:
       token:
@@ -167,13 +186,19 @@ paths:
       summary: SignUp
       tags:
         - auth
-  /courses/getAll:
+  /api/get-courses:
     get:
       consumes:
         - application/json
       description: get data from goverla and nbu
       produces:
         - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          description: Token used for authentication
+          required: true
+          type: string
       responses:
         "200":
           description: OK
@@ -208,14 +233,21 @@ paths:
 
       summary: Get actual courses
       tags:
-        - courses
+        - api
   /api/who-am-i:
     get:
+      summary: Get data about user
       consumes:
         - application/json
       description: get data about user
       produces:
         - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          description: Token used for authentication
+          required: true
+          type: string
       responses:
         "200":
           description: OK
@@ -239,12 +271,69 @@ paths:
           description: ""
           schema:
             $ref: '#/definitions/handler.errorResponse'
-
-
-
-
-      security:
-        - ApiKeyAuth: [ ]
-      summary: get data about user
+      tags:
+        - api
+  /api/lists:
+    post:
+      summary: Create a new budget list
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          description: Token used for authentication
+          required: true
+          type: string
+        - name: list
+          in: body
+          description: The list to create
+          required: true
+          schema:
+            $ref: '#/definitions/ListInput'
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Invalid input body
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+      tags:
+        - api
+    delete:
+      summary: Delete a budget list by ID
+      parameters:
+        - name: Authorization
+          in: header
+          description: Token used for authentication
+          required: true
+          type: string
+        - name: id
+          in: body
+          description: ID of the list to be deleted
+          required: true
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 7
+      responses:
+        '200':
+          description: Success response
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
       tags:
         - api
