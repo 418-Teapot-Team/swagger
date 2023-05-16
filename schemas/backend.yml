@@ -290,7 +290,7 @@ paths:
             $ref: '#/definitions/handler.errorResponse'
       tags:
         - api
-  /api/budgets/{type}:
+  /api/lists/{type}:
     get:
       summary: Get budget list by type
       parameters:
@@ -301,9 +301,16 @@ paths:
           type: string
         - name: type
           in: path
-          description: Type of the budget list to retrieve (can be 'income' and 'expenses')
-          required: true
+          description: Type of the budget list to retrieve (can be 'income' and 'expenses') IF type not passed, return all transactions of the user
           type: string
+        - name: orderBy
+          in: query
+          description: Column to sort the results by. Defaults to 'created_at', (two options 'created_at' and 'amount')
+          type: string
+        - name: reverse
+          in: query
+          description: If passed true sort the results in ascending order. Defaults to false (descending order)
+          type: boolean
       responses:
         '200':
           description: Success response
