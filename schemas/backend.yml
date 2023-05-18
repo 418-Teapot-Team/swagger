@@ -79,7 +79,7 @@ definitions:
       type:
         type: string
       category:
-        type: string
+        type: integer
       amount:
         type: number
       comment:
@@ -89,7 +89,7 @@ definitions:
     example:
       id: 1
       type: expenses
-      category: Groceries
+      category: 2
       amount: 50.0
       comment: Bought some groceries for the week
       created_at: "2023-05-15T10:30:00Z"
