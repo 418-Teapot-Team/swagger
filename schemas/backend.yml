@@ -393,3 +393,26 @@ paths:
           description: Internal server error
       tags:
         - api
+    put:
+      summary: Edit a budget list
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/List'
+      responses:
+        '200':
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/List'
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
+      tags:
+        - api
