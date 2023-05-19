@@ -52,6 +52,27 @@ definitions:
       - fullName
       - userId
     type: object
+  SavingStats:
+    properties:
+      result:
+        type: array
+        items:
+          type: object
+          properties:
+            Month:
+              type: string
+            IncomeNet:
+              type: number
+        example:
+          - Month: '2023-01'
+            IncomeNet: 1000
+          - Month: '2023-02'
+            IncomeNet: -320
+    required:
+      - Months
+      - IncomeNet
+    type: object
+    
   ListInput:
     type: object
     properties:
@@ -327,6 +348,88 @@ paths:
           description: Unauthorized
         '500':
           description: Internal server error
+      tags:
+        - api
+  /api/lists/get-saving-stats:
+    get:
+      summary: Get user savings statistics data
+      consumes:
+        - application/json
+      description: Get user savings statistics data for last year per months
+      produces:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          description: Token used for authentication
+          required: true
+          type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/SavingStats'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+          examples:
+            application/json:
+              message: user not found
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+          examples:
+            application/json:
+              message: error while trying to get user
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      tags:
+        - api
+  /api/lists/current-mon-saved:
+    get:
+      summary: Get user month savings  value
+      consumes:
+        - application/json
+      description: Get user current month income net
+      produces:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          description: Token used for authentication
+          required: true
+          type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: object
+            properties:
+              result:
+                type: number
+                example: 5654
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+          examples:
+            application/json:
+              message: user not found
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+          examples:
+            application/json:
+              message: error while trying to get user
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
       tags:
         - api
   /api/lists:
