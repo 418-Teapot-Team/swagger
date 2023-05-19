@@ -1,7 +1,12 @@
-swagger: '2.0'
-
+swagger: "2.0"
 basePath: /
 definitions:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   handler.errorResponse:
     properties:
       message:
@@ -35,6 +40,43 @@ definitions:
       - email
       - password
     type: object
+
+  FinancialData:
+    type: object
+    properties:
+      date:
+        type: string
+        format: date
+        example: "2022-11-02"
+      value:
+        type: number
+        format: double
+        example: 1000
+  Category:
+    type: object
+    properties:
+      id:
+        type: integer
+        description: Category ID
+      category:
+        type: string
+        description: Category name
+      hash:
+        type: string
+        description: Color hash
+      imageUrl:
+        type: string
+        description: Image URL
+      type:
+        type: string
+        description: Category type (income or expenses)
+    example:
+      id: 1
+      category: Food
+      hash: "#ff0000"
+      imageUrl: "https://example.com/food.png"
+      type: expenses
+
   Account:
     type: object
     properties:
@@ -186,10 +228,18 @@ definitions:
         type: string
       darkRate:
         type: string
-host: localhost:8081
+host: http://13.48.114.197
 info:
   contact: { }
-  description: API Server for Budget Tracker
+  description: |
+    This is the API documentation for [Teapot-Budget](http://13.48.114.197/). For more information about Swagger,visit [site](http://swagger.io) or join the discussion on [irc.freenode.net, #swagger](http://swagger.io/irc/).
+
+    ## Introduction
+    To use this API, you need to obtain a Bearer token. There are two options to acquire a Bearer token:
+
+    1. Sign in to Teapot-Budget using your email and password.
+    2. Make a CRUD operations with incomes, expenses etc.
+
   title: Budget Tracker App API
   version: "1.0"
 paths:
@@ -285,6 +335,7 @@ paths:
       summary: SignUp
       tags:
         - auth
+
   /api/get-courses:
     get:
       consumes:
@@ -330,6 +381,8 @@ paths:
       summary: Get actual courses
       tags:
         - api
+      security:
+        - bearerAuth: [ ]
   /api/who-am-i:
     get:
       summary: Get data about user
@@ -369,6 +422,77 @@ paths:
             $ref: '#/definitions/handler.errorResponse'
       tags:
         - api
+      security:
+        - bearerAuth: [ ]
+  /get-top-categories:
+    get:
+      summary: Get top categories for income or expenses
+      parameters:
+        - name: type
+          in: query
+          description: Type of list (income or expenses)
+          required: true
+          type: string
+          enum:
+            - income
+            - expenses
+      responses:
+        200:
+          description: Successful operation
+          schema:
+            type: object
+            properties:
+              result:
+                type: array
+                items:
+                  $ref: "#/definitions/Category"
+      x-examples:
+        - name: Example Response
+          value:
+            result:
+              - id: 1
+                category: Food
+                hash: "#ff0000"
+                imageUrl: "https://example.com/food.png"
+                type: expenses
+      tags:
+        - api
+      security:
+        - bearerAuth: [ ]
+  /api/get-stats:
+    get:
+      summary: Get statistics
+      description: Retrieves financial statistics based on budget type, and number of months.
+      parameters:
+        - name: months
+          in: query
+          description: Number of months for the statistics
+          required: false
+          type: integer
+        - name: type
+          in: query
+          description: Budget type (income or expenses)
+          required: false
+          type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: object
+            properties:
+              result:
+                type: array
+                items:
+                  $ref: "#/definitions/FinancialData"
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      tags:
+        - api
+
   /api/lists/{type}:
     get:
       summary: Get budget list by type
@@ -407,7 +531,9 @@ paths:
         '500':
           description: Internal server error
       tags:
-        - api
+        - lists
+      security:
+        - bearerAuth: [ ]
   /api/lists/get-saving-stats:
     get:
       summary: Get user savings statistics data
@@ -446,7 +572,9 @@ paths:
           schema:
             $ref: '#/definitions/handler.errorResponse'
       tags:
-        - api
+        - lists
+      security:
+        - bearerAuth: [ ]
   /api/lists/current-mon-saved:
     get:
       summary: Get user month savings  value
@@ -489,7 +617,10 @@ paths:
           schema:
             $ref: '#/definitions/handler.errorResponse'
       tags:
-        - api
+        - lists
+      security:
+        - bearerAuth: [ ]
+
   /api/lists:
     post:
       summary: Create a new budget list
@@ -519,7 +650,9 @@ paths:
         '500':
           description: Internal Server Error
       tags:
-        - api
+        - lists
+      security:
+        - bearerAuth: [ ]
     delete:
       summary: Delete a budget list by ID
       parameters:
@@ -553,7 +686,9 @@ paths:
         '500':
           description: Internal server error
       tags:
-        - api
+        - lists
+      security:
+        - bearerAuth: [ ]
     put:
       summary: Edit a budget list
       consumes:
@@ -576,7 +711,9 @@ paths:
         '500':
           description: Internal server error
       tags:
-        - api
+        - lists
+      security:
+        - bearerAuth: [ ]
   /api/accounts/{account}:
     get:
       summary: Get all accounts
@@ -593,6 +730,8 @@ paths:
             $ref: '#/definitions/AccountsResponse'
       tags:
         - accounts
+      security:
+        - bearerAuth: [ ]
   /api/accounts/:
     post:
       summary: Create an account
@@ -613,6 +752,8 @@ paths:
                 type: string
       tags:
         - accounts
+      security:
+        - bearerAuth: [ ]
     put:
       summary: Edit an account
       parameters:
@@ -629,6 +770,8 @@ paths:
             $ref: '#/definitions/Account'
       tags:
         - accounts
+      security:
+        - bearerAuth: [ ]
     delete:
       summary: Delete an account
       parameters:
@@ -654,3 +797,26 @@ paths:
                 type: string
       tags:
         - accounts
+      security:
+        - bearerAuth: [ ]
+  /api/account-total:
+    get:
+      summary: Retrieve total deposits for the user's account
+      responses:
+        200:
+          description: Successful operation
+          schema:
+            type: object
+            properties:
+              payed:
+                type: number
+                description: Amount paid
+                example: 2066.66
+              goalSum:
+                type: number
+                description: Goal sum
+                example: 115366.66
+      tags:
+        - accounts
+      security:
+        - bearerAuth: [ ]
