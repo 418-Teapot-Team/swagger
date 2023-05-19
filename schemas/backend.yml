@@ -488,6 +488,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/AccountsResponse'
+      tags:
+        - accounts
   /api/accounts/:
     post:
       summary: Create an account
@@ -506,6 +508,8 @@ paths:
             properties:
               message:
                 type: string
+      tags:
+        - accounts
     put:
       summary: Edit an account
       parameters:
@@ -520,6 +524,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/Account'
+      tags:
+        - accounts
     delete:
       summary: Delete an account
       parameters:
@@ -543,3 +549,5 @@ paths:
             properties:
               message:
                 type: string
+      tags:
+        - accounts
